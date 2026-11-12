@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '/Core/Features/Splash/splash_screen.dart';
+import 'features/splash/splash_screen.dart';
 
 class GalaxyApp extends StatelessWidget {
   const GalaxyApp({super.key});

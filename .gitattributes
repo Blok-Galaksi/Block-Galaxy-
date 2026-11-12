@@ -1,0 +1,2 @@
+# Normalisasi line ending supaya diff Git tidak berisik antar OS.
+* text=auto

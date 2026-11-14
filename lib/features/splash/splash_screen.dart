@@ -41,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     // Logo maksimal 483, tapi mengecil di layar sempit agar tidak overflow.
     final screenWidth = MediaQuery.sizeOf(context).width;
-    final logoSize = math.min(screenWidth * 0.8, _maxLogoSize);
+    final logoSize = math.min(screenWidth * 2.0, _maxLogoSize);
 
     return Scaffold(
       body: Container(

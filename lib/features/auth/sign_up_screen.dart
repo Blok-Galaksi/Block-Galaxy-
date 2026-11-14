@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/app_gradient.dart';
 import '../../core/app_input_decoration.dart';
 import '../../core/validators.dart';
+import 'auth_services.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -21,6 +22,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _emailController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _authService = AuthService();
+  bool _isSubmitting = false;
 
   @override
   void dispose() {
@@ -30,20 +33,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     FocusScope.of(context).unfocus();
 
-    if (!(_formKey.currentState?.validate() ?? false)) return;
+    if (_isSubmitting || !(_formKey.currentState?.validate() ?? false)) return;
+    setState(() => _isSubmitting = true);
 
-    // TODO: sambungkan ke backend setelah keputusan backend dibuat.
-    // Ambil nilai dari _emailController.text.trim(),
-    // _usernameController.text.trim(), dan _passwordController.text.
-    // Logika register asli sebaiknya di class terpisah (mis. AuthService).
-    // Jangan pernah print/log password.
-    _showPlaceholder('Backend belum terhubung');
+    try {
+      final message = await _authService.register(
+        email: _emailController.text.trim(),
+        username: _usernameController.text.trim(),
+        password: _passwordController.text,
+      );
+      if (!mounted) return;
+      final messenger = ScaffoldMessenger.of(context);
+      Navigator.of(context).pop();
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(message)));
+    } on AuthException catch (error) {
+      if (mounted) _showMessage(error.message);
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
   }
 
-  void _showPlaceholder(String message) {
+  void _showMessage(String message) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(message)));
@@ -138,7 +153,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(height: 36),
                       Center(
                         child: ElevatedButton(
-                          onPressed: _submit,
+                          onPressed: _isSubmitting ? null : _submit,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFCC0000),
                             padding: const EdgeInsets.symmetric(
@@ -149,13 +164,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               borderRadius: BorderRadius.circular(5),
                             ),
                           ),
-                          child: const Text(
-                            'Sign Up',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          child: _isSubmitting
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text(
+                                  'Sign Up',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                         ),
                       ),
                       const SizedBox(height: 24),

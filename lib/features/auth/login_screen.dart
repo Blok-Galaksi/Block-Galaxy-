@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '/../Core/app_gradient.dart';
+import '/../Core/app_input_decoration.dart';
+import 'sign_up_screen.dart';
+import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -49,15 +52,6 @@ class _LoginScreenState extends State<LoginScreen> {
     return null;
   }
 
-  InputDecoration _inputDecoration(String hint) {
-    return InputDecoration(
-      filled: true,
-      fillColor: const Color(0xFFDBDADA),
-      hintText: hint,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(5)),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                         controller: _usernameController,
                         textInputAction: TextInputAction.next,
-                        decoration: _inputDecoration('Username'),
+                        decoration: authInputDecoration('Username'),
                         validator: (v) => _requiredValidator(v, 'Username'),
                       ),
                       const SizedBox(height: 24),
@@ -101,21 +95,23 @@ class _LoginScreenState extends State<LoginScreen> {
                         obscureText: true,
                         textInputAction: TextInputAction.done,
                         onFieldSubmitted: (_) => _submit(),
-                        decoration: _inputDecoration('Password'),
+                        decoration: authInputDecoration('Password'),
                         validator: (v) => _requiredValidator(v, 'Password'),
                       ),
                       const SizedBox(height: 8),
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
-                          // TODO: ganti dengan navigasi ke layar reset password.
-                          onPressed: () =>
-                              _showPlaceholder('Fitur belum tersedia'),
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => const ForgotPasswordScreen(),
+                            ),
+                          ),
                           style: TextButton.styleFrom(
                             foregroundColor: Colors.white,
                           ),
                           child: const Text(
-                            'Forgot Password ?',
+                            'Lupa Password ?',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -153,9 +149,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           TextButton(
-                            // TODO: ganti dengan navigasi ke SignUpScreen.
-                            onPressed: () =>
-                                _showPlaceholder('Fitur belum tersedia'),
+                            onPressed: () => Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => const SignUpScreen(),
+                              ),
+                            ),
                             style: TextButton.styleFrom(
                               foregroundColor: Colors.blue,
                               padding: const EdgeInsets.symmetric(
